@@ -9,7 +9,7 @@ import {
 import { interpolateWatercolorBlue } from "bucket-lib/utils";
 import ticksExact from "utils/ticksExact";
 
-const LEVELS = 10;
+const LEVELS = 4;
 
 function drawBottle(context, width, height) {
   const bottleWidth = height / 2;

@@ -11,7 +11,7 @@ export default function generateTLX() {
       range: ["perfect", "failure"],
     },
     {
-      q: "How hard did you have to work to accomplish your level of performance",
+      q: "How hard did you have to work to accomplish your level of performance?",
       id: "effort",
       range: ["very low", "very high"],
     },

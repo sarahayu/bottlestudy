@@ -10,6 +10,7 @@ export default function App() {
     setCurrentSlideIdx,
     maxSlides,
     canProceed,
+    answerCorrect,
   } = useAppState();
 
   return (
@@ -20,11 +21,14 @@ export default function App() {
           currentIdx={currentSlideIdx + 1}
           maxIdx={maxSlides}
           canProceed={canProceed}
+          answerCorrect={answerCorrect}
         >
           {questions[currentSlideIdx]}
         </StudyFrame>
       )}
-      {currentSlideIdx >= maxSlides && <div>Thank you for participating!</div>}
+      {currentSlideIdx >= maxSlides && (
+        <div className="thankyou">Thank you for participating!</div>
+      )}
     </>
   );
 }

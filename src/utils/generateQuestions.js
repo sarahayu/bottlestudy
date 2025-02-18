@@ -18,7 +18,6 @@ export default function generateQuestions() {
 }
 
 function epSearch(questions) {
-  console.log("fdsa");
   questions.groups.push({
     type: "ep_search",
     qs: Array.from({ length: NUM_QS_PER_GROUP }, generateSearchQuestion),
@@ -69,13 +68,12 @@ function generateSearchQuestion() {
   if (chosenType == "medianClosestToX") {
     const X = d3.randomInt(RANGE[0], RANGE[1] + 1)();
     const options = medianClosestToX(X);
-    console.log(options);
 
     const shuffledOptionIdxs = d3.shuffle(d3.range(options.length));
     const correctAnswerIdx = shuffledOptionIdxs.indexOf(0);
 
     return {
-      prompt: `Which scenario has a median closest to ${X} TAF?`,
+      prompt: `Which scenario has a median closest to ${X} TAF? Select the correct answer.`,
       possibleAns: shuffledOptionIdxs.map((i) => options[i]),
       correctAns: correctAnswerIdx,
     };
@@ -89,7 +87,7 @@ function generateSearchQuestion() {
     const correctAnswerIdx = shuffledOptionIdxs.indexOf(0);
 
     return {
-      prompt: `Which scenario has a minimum closest to ${X} TAF?`,
+      prompt: `Which scenario has a minimum closest to ${X} TAF? Select the correct answer.`,
       possibleAns: shuffledOptionIdxs.map((i) => options[i]),
       correctAns: correctAnswerIdx,
     };
@@ -110,7 +108,7 @@ function generateSearchQuestion() {
     return {
       prompt: `Which scenario has the ${
         isMost ? "most" : "least"
-      } consistent TAF?`,
+      } consistent TAF? Select the correct answer.`,
       possibleAns: shuffledOptionIdxs.map((i) => options[i]),
       correctAns: correctAnswerIdx,
     };
@@ -208,6 +206,7 @@ function generateExploreQuestion() {
 
     if (appliedConds.minCond === undefined) {
       appliedConds.minCond = (x) => x >= realMin;
+      console.log("in for " + realMin);
     }
 
     correctAns.push(possibleAns.length);
@@ -224,7 +223,7 @@ function generateExploreQuestion() {
       appliedConds.minCond = (x) => x < fakeMin;
     }
 
-    possibleAns.push(`All scenarios get at least ${fakeMin} TAF`);
+    possibleAns.push(`RH: All scenarios get at least ${fakeMin} TAF`);
   }
 
   if (conditions.includes("lessThan")) {
@@ -241,7 +240,7 @@ function generateExploreQuestion() {
 
     appliedConds.maxCond = (x) => x > fakeMax;
 
-    possibleAns.push(`All scenarios get less than ${fakeMax} TAF`);
+    possibleAns.push(`RH: All scenarios get less than ${fakeMax} TAF`);
   }
 
   const options = generateData(appliedConds, NUM_OPTS, RANGE);
@@ -250,6 +249,7 @@ function generateExploreQuestion() {
     prompt:
       "Which of these statements are true for ALL scenarios? Select ALL that apply.",
     data: options,
+    metadata: options.map((o) => [d3.min(o), d3.median(o), d3.max(o)]),
     possibleAns: possibleAns,
     correctAns: correctAns,
   };
@@ -272,12 +272,20 @@ function pickConditions() {
 // Which scenario has a median closest to X TAF?
 function medianClosestToX(X) {
   return [
-    ...generateData({ medianCond: X }, 1, RANGE),
+    ...generateData(
+      {
+        medianCond: X,
+        sdCond: (x) => x < Math.min(RANGE[1] - X, X - RANGE[0]) / 3,
+      },
+      1,
+      RANGE
+    ),
     // make other options have a median some distance away from actual median
     ...generateData(
       {
         medianCond: (x) =>
           x > X + OTHER_OPTN_BUFFER || x < X - OTHER_OPTN_BUFFER,
+        sdCond: (x) => x < Math.min(RANGE[1] - X, X - RANGE[0]) / 3,
       },
       NUM_OPTS - 1,
       RANGE
@@ -317,35 +325,67 @@ function consistent(isMost) {
   // make correct answer have the smallest sd
   if (isMost)
     return [
-      ...generateData({ sd: rangeSize / 8 }, 1, RANGE),
-      ...generateData({ sd: (x) => x > rangeSize / 8 }, NUM_OPTS - 1, RANGE),
+      ...generateData(
+        {
+          sdCond: rangeSize / 18,
+          medianCond: (x) =>
+            x > RANGE[0] + rangeSize / 7 && x < RANGE[1] - rangeSize / 7,
+        },
+        1,
+        RANGE
+      ),
+      ...generateData(
+        {
+          sdCond: (x) => x > rangeSize / 18 && rangeSize / 7 > x,
+          medianCond: (x) =>
+            x > RANGE[0] + rangeSize / 7 && x < RANGE[1] - rangeSize / 7,
+        },
+        NUM_OPTS - 1,
+        RANGE
+      ),
     ];
   // make correct answer have the largest sd
   else
     return [
-      ...generateData({ sd: rangeSize / 3 }, 1, RANGE),
-      ...generateData({ sd: (x) => x < rangeSize / 3 }, NUM_OPTS - 1, RANGE),
+      ...generateData(
+        {
+          sdCond: rangeSize / 7,
+          medianCond: (x) =>
+            x > RANGE[0] + rangeSize / 7 && x < RANGE[1] - rangeSize / 7,
+        },
+        1,
+        RANGE
+      ),
+      ...generateData(
+        {
+          sdCond: (x) => x < rangeSize / 7,
+          medianCond: (x) =>
+            x > RANGE[0] + rangeSize / 7 && x < RANGE[1] - rangeSize / 7,
+        },
+        NUM_OPTS - 1,
+        RANGE
+      ),
     ];
 }
 
 // The median is closer to [X, Y] than [Y, X] TAF.
-function condMedianCloserToXThanY(X, Y, boudsPadding) {
+function condMedianCloserToXThanY(X, Y, boundsPadding) {
   const halfDist = Math.abs(Y - X) / 2;
 
   if (X < Y) {
-    return (x) => RANGE[0] + boudsPadding < x && x < X + halfDist;
+    return (x) => RANGE[0] + boundsPadding < x && x < X + halfDist;
   } else {
-    return (x) => X - halfDist < x && x < RANGE[1] - boudsPadding;
+    return (x) => X - halfDist < x && x < RANGE[1] - boundsPadding;
   }
 }
 // The minimum is closer to [X, Y] than [Y, X] TAF.
-function condMinCloserToX(X, Y, boudsPadding) {
+function condMinCloserToX(X, Y, boundsPadding) {
   const halfDist = Math.abs(Y - X) / 2;
 
   if (X < Y) {
-    return (x) => RANGE[0] + boudsPadding < x && x < X + halfDist;
+    return (x) => RANGE[0] + boundsPadding < x && x < X + halfDist;
   } else {
-    return (x) => X - halfDist < x && x < RANGE[1] - boudsPadding;
+    return (x) => X - halfDist < x && x < RANGE[1] - boundsPadding;
   }
 }
 // All scenarios get at least X TAF.
@@ -359,53 +399,58 @@ function condLessThan(X) {
 
 // to make my life easier, make bounds condition (min max) and sd condition exclusive
 // (i.e. if we have bounds, ignore sd. otherwise, use sd if it exists.)
-function generateData(
-  { _medianCond = null, _minCond = null, _maxCond = null, _sdCond = null },
-  numOpts,
-  range = [0, 100]
-) {
+function generateData(conditions, numOpts, range = [0, 100]) {
+  let {
+    medianCond = null,
+    minCond = null,
+    maxCond = null,
+    sdCond = null,
+  } = conditions;
+
   const datas = [];
 
-  const hasMedianCond = _medianCond === 0 || !!_medianCond,
-    hasMinCond = _minCond === 0 || !!_minCond,
-    hasMaxCond = _maxCond === 0 || !!_maxCond,
-    hasSdCond = _sdCond === 0 || !!_sdCond;
+  const hasMedianCond = medianCond === 0 || !!medianCond,
+    hasMinCond = minCond === 0 || !!minCond,
+    hasMaxCond = maxCond === 0 || !!maxCond,
+    hasSdCond = sdCond === 0 || !!sdCond;
 
-  const medianCond = hasMedianCond ? _medianCond : () => true;
-  const minCond = hasMinCond ? _minCond : () => true;
-  const maxCond = hasMaxCond ? _maxCond : () => true;
-  const sdCond = hasSdCond ? _sdCond : () => true;
+  medianCond = hasMedianCond ? medianCond : () => true;
+  minCond = hasMinCond ? minCond : () => true;
+  maxCond = hasMaxCond ? maxCond : () => true;
+  sdCond = hasSdCond ? sdCond : () => true;
 
   for (let i = 0; i < numOpts; i++) {
     let median, min, max, sd;
 
     if (typeof medianCond === "function")
       while (1) {
-        median = d3.randomInt(range[0], range[1] + 1)();
+        median = d3.randomUniform(range[0], range[1])();
         if (medianCond(median)) break;
       }
     else median = medianCond;
 
     if (typeof minCond === "function")
       while (1) {
-        min = d3.randomInt(range[0], range[1] + 1)();
+        min = d3.randomUniform(range[0], range[1])();
         if (minCond(min)) break;
       }
     else min = minCond;
 
     if (typeof maxCond === "function")
       while (1) {
-        max = d3.randomInt(range[0], range[1] + 1)();
+        max = d3.randomUniform(range[0], range[1])();
         if (maxCond(max)) break;
       }
     else max = maxCond;
 
-    if (typeof sdCond === "function")
-      while (1) {
-        sd = d3.randomInt(range[0], range[1] + 1)();
-        if (sdCond(sd)) break;
-      }
-    else sd = sdCond;
+    if (!hasMinCond && !hasMaxCond) {
+      if (typeof sdCond === "function")
+        while (1) {
+          sd = d3.randomUniform(range[0], range[1])();
+          if (sdCond(sd)) break;
+        }
+      else sd = sdCond;
+    }
 
     // generate array of 203 numbers with specified conditions
     const numbers = [];
@@ -421,7 +466,7 @@ function generateData(
         ...Array.from({ length: 100 }, d3.randomUniform(median, max))
       );
     } else {
-      numbers.push(...Array.from({ length: 203 }, d3.randomNormal(0, sd / 10)));
+      numbers.push(...Array.from({ length: 203 }, d3.randomNormal(0, sd)));
 
       const medianActual = d3.median(numbers);
 

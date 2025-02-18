@@ -1,3 +1,135 @@
 :root {
   font-family: "Didact Gothic", Helvetica, Arial, Lucida, sans-serif;
+  font-size: 1.6rem;
+  background-color: #d0dbd9;
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+input[type="radio"] + label,
+input[type="checkbox"] + label {
+  cursor: pointer;
+  padding-left: 0.3em;
+}
+
+button {
+  cursor: pointer;
+}
+
+ol,
+ul,
+li {
+  list-style-type: none;
+  padding: 0;
+}
+
+#root {
+  display: grid;
+  min-height: 100vh;
+}
+
+.study-area,
+.thankyou {
+  padding: 1rem 2rem;
+  width: max-content;
+  place-self: center;
+  background-color: #efebe0;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.study-area-footer {
+  width: max-content;
+  margin: 0 auto;
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8em;
+}
+
+.bottle-axis {
+  font-size: 0.5em;
+}
+
+.possible-ans {
+  display: flex;
+  gap: 2rem;
+}
+
+.correctans {
+  border: 1px solid green;
+}
+
+.prompt {
+  padding-block: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: max-content;
+}
+
+.prompt-summarize {
+  min-height: 30rem;
+}
+
+.prompt-summarize .possible-ans {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.prompt-summarize .possible-ans > span {
+  display: flex;
+  width: 100%;
+}
+
+.prompt-summarize .possible-ans > span > :first-child {
+  flex-grow: 0;
+}
+
+.prompt-summarize .possible-ans > span > :last-child {
+  flex-grow: 1;
+}
+
+.data-to-summarize {
+  display: flex;
+  gap: 1rem;
+}
+
+.tlx-questions {
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+  margin: 0;
+  display: block;
+}
+
+.tlx-opts {
+  display: flex;
+  gap: 3rem;
+}
+
+.tlx-questions > li {
+  position: relative;
+  display: block;
+  width: min-content;
+}
+
+.tlx-questions > li + li {
+  margin-top: 2.5rem;
+}
+
+.tlx-questions span {
+  font-size: 0.7em;
+}
+
+.tlx-questions span:first-of-type {
+  position: absolute;
+  left: 0;
+  top: 100%;
+}
+
+.tlx-questions span:last-of-type {
+  position: absolute;
+  right: 0;
+  top: 100%;
 }
