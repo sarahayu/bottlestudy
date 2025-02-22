@@ -54,9 +54,10 @@ export default function QuestionSummarize({
           <div>
             <BottleGlyph
               key={i}
-              levelInterp={createInterpsFromDelivs(pa, 0, 100)}
+              levelInterp={createInterpsFromDelivs(pa, 0, 20)}
               width={100}
               height={200}
+              maxValue={20}
             />
             <span>{metadata[i].map((x) => Math.round(x)).join(",")}</span>
           </div>
