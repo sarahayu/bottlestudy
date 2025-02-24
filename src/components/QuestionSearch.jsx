@@ -52,9 +52,10 @@ export default function QuestionSearch({
             />
             <label htmlFor={i}>
               <BottleGlyph
-                levelInterp={createInterpsFromDelivs(pa, 0, 100)}
+                levelInterp={createInterpsFromDelivs(pa, 0, 20)}
                 width={100}
                 height={200}
+                maxValue={20}
               />
             </label>
           </span>
