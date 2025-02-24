@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import BottleGlyph from "./BottleGlyph";
 import createInterpsFromDelivs from "utils/createInterpsFromDelivs";
+import ExceedancePlot from "./ExceedancePlot";
 
 export default function QuestionSearch({
   id,
@@ -9,6 +10,7 @@ export default function QuestionSearch({
   correctAns,
   setResponseTime,
   setAnswerCorrect,
+  VisComponent,
 }) {
   const [selected, setSelected] = useState(-1);
   const startTimeRef = useRef(0);
@@ -51,9 +53,9 @@ export default function QuestionSearch({
               onChange={() => handleOptnChanged(i)}
             />
             <label htmlFor={i}>
-              <BottleGlyph
+              <VisComponent
                 levelInterp={createInterpsFromDelivs(pa, 0, 20)}
-                width={100}
+                width={200}
                 height={200}
                 maxValue={20}
               />

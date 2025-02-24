@@ -12,9 +12,9 @@ export default function generateQuestions() {
 
   // [exceedance plot, water bottles] X [searching, exploring]
   epSearch(questions);
-  // epExplore(questions);
-  // wbSearch(questions);
-  // wbExplore(questions);
+  epExplore(questions);
+  wbSearch(questions);
+  wbExplore(questions);
 
   return questions;
 }
@@ -69,7 +69,6 @@ function generateSearchQuestion() {
 
   if (chosenType == "medianClosestToX") {
     const X = randomRange(RANGE_MIN, RANGE_MAX);
-    console.log(X);
     const options = medianClosestToX(X);
 
     const shuffledOptionIdxs = d3.shuffle(d3.range(options.length));
@@ -205,7 +204,9 @@ function generateExploreQuestion() {
         : knownMedian !== null
         ? knownMedian
         : RANGE_MAX;
-    const exclusiveMinimum = randomRange(RANGE_MIN, upperBoundOfMinimum);
+    const exclusiveMinimum = randomRange(RANGE_MIN, upperBoundOfMinimum - 1);
+
+    console.log(exclusiveMinimum);
 
     concatConditions(appliedConds, {
       medianCond: (possibleMedianExact) =>
@@ -217,7 +218,7 @@ function generateExploreQuestion() {
     correctAns.push(possibleAns.length);
     possibleAns.push(`All scenarios get more than ${exclusiveMinimum} TAF`);
 
-    if (!knownMinimum !== null) knownMinimum = exclusiveMinimum + 1;
+    if (knownMinimum === null) knownMinimum = exclusiveMinimum + 1;
   }
   // possibly add an incorrect answer
   else if (randomRange(2) == 0) {
@@ -248,6 +249,8 @@ function generateExploreQuestion() {
       RANGE_MAX + 1
     );
 
+    console.log(exclusiveMaximum);
+
     concatConditions(appliedConds, {
       medianCond: (possibleMedianExact) =>
         possibleMedianExact < exclusiveMaximum,
@@ -270,6 +273,8 @@ function generateExploreQuestion() {
     possibleAns.push(`All scenarios get less than ${falseExclusiveMax} TAF`);
   }
 
+  console.log(conditions);
+
   const metadatas = generateMetadatas(appliedConds, NUM_OPTS, [
     RANGE_MIN,
     RANGE_MAX,
@@ -280,7 +285,6 @@ function generateExploreQuestion() {
     prompt:
       "Which of these statements are true for ALL scenarios? Select ALL that apply.",
     data: options,
-    metadata: options.map((o) => [d3.min(o), d3.median(o), d3.max(o)]),
     possibleAns: possibleAns,
     correctAns: correctAns,
   };

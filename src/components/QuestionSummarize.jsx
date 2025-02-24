@@ -6,11 +6,11 @@ export default function QuestionSummarize({
   id,
   prompt,
   data,
-  metadata,
   possibleAns,
   correctAns,
   setResponseTime,
   setAnswerCorrect,
+  VisComponent,
 }) {
   const [selected, setSelected] = useState([]);
   const startTimeRef = useRef(0);
@@ -52,14 +52,13 @@ export default function QuestionSummarize({
       <div className="data-to-summarize">
         {data.map((pa, i) => (
           <div>
-            <BottleGlyph
+            <VisComponent
               key={i}
               levelInterp={createInterpsFromDelivs(pa, 0, 20)}
-              width={100}
+              width={200}
               height={200}
               maxValue={20}
             />
-            <span>{metadata[i].map((x) => Math.round(x)).join(",")}</span>
           </div>
         ))}
       </div>

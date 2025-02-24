@@ -6,6 +6,8 @@ import QuestionSearch from "components/QuestionSearch";
 
 import generateQuestions from "utils/generateQuestions";
 import SurveyTLX from "components/SurveyTLX";
+import ExceedancePlot from "components/ExceedancePlot";
+import BottleGlyph from "components/BottleGlyph";
 
 const questionsData = generateQuestions();
 
@@ -35,6 +37,7 @@ export default function useAppState() {
               correctAns={q.correctAns}
               setAnswerCorrect={setAnswerCorrect}
               setResponseTime={() => {}}
+              VisComponent={type.includes("ep") ? ExceedancePlot : BottleGlyph}
             />
           ))
         );
@@ -45,11 +48,11 @@ export default function useAppState() {
               id={i + j}
               prompt={q.prompt}
               data={q.data}
-              metadata={q.metadata}
               possibleAns={q.possibleAns}
               correctAns={q.correctAns}
               setAnswerCorrect={setAnswerCorrect}
               setResponseTime={() => {}}
+              VisComponent={type.includes("ep") ? ExceedancePlot : BottleGlyph}
             />
           ))
         );

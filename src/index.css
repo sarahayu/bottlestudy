@@ -133,3 +133,12 @@ li {
   right: 0;
   top: 100%;
 }
+
+.ep-wrapper text {
+  font-size: 1.5em;
+}
+
+.ep-wrapper .tick line {
+  color: gray;
+  opacity: 0.4;
+}
