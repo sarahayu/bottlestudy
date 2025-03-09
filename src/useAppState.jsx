@@ -14,6 +14,7 @@ const questionsData = generateQuestions();
 console.log(questionsData);
 
 export default function useAppState() {
+  const [isStartStudy, setIsStartStudy] = useState(false);
   const [currentSlideIdx, setCurrentSlideIdx] = useState(0);
   const [canProceed, setCanProceed] = useState(true);
   const [answerCorrect, setAnswerCorrect] = useState(true);
@@ -68,6 +69,10 @@ export default function useAppState() {
     return _questions;
   }, []);
 
+  const closeTutorial = useCallback(function () {
+    setIsStartStudy(true);
+  }, []);
+
   return {
     questions,
     currentSlideIdx,
@@ -75,5 +80,7 @@ export default function useAppState() {
     maxSlides: questionsData.num_qs + questionsData.groups.length,
     canProceed,
     answerCorrect,
+    isStartStudy,
+    closeTutorial,
   };
 }

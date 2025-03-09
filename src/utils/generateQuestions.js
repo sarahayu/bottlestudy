@@ -273,8 +273,6 @@ function generateExploreQuestion() {
     possibleAns.push(`All scenarios get less than ${falseExclusiveMax} TAF`);
   }
 
-  console.log(conditions);
-
   const metadatas = generateMetadatas(appliedConds, NUM_OPTS, [
     RANGE_MIN,
     RANGE_MAX,
