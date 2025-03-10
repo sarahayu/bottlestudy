@@ -3,6 +3,7 @@ import StudyFrame from "components/StudyFrame";
 
 import useAppState from "useAppState";
 import Tutorial from "components/Tutorial";
+import FinishSlide from "components/FinishSlide";
 
 export default function App() {
   const {
@@ -14,6 +15,7 @@ export default function App() {
     answerCorrect,
     isStartStudy,
     closeTutorial,
+    submitData,
   } = useAppState();
 
   return (
@@ -34,7 +36,7 @@ export default function App() {
             </StudyFrame>
           )}
           {currentSlideIdx >= maxSlides && (
-            <div className="thankyou">Thank you for participating!</div>
+            <FinishSlide handleSubmitData={submitData} />
           )}
         </>
       )}

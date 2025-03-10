@@ -7,6 +7,9 @@ const RESOLUTION = 100;
 
 export default function ExceedancePlot({
   levelInterp,
+  title,
+  axisLeft,
+  axisBottom,
   maxValue = 100,
   width = 200,
   height = 400,
@@ -14,8 +17,8 @@ export default function ExceedancePlot({
   const CHART_MARGIN = {
     top: 30,
     right: 30,
-    bottom: 30,
-    left: 30,
+    bottom: 50,
+    left: 50,
   };
 
   const svgElement = useRef();
@@ -27,6 +30,15 @@ export default function ExceedancePlot({
       .append("g")
       .attr("class", "exceedance-plot")
       .attr("transform", `translate(${CHART_MARGIN.left},${CHART_MARGIN.top})`);
+
+    svgContainer
+      .append("g")
+      .attr("class", "chart-title")
+      .attr("transform", `translate(${width / 2}, ${-10})`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .style("font-weight", "bold")
+      .style("font-size", 22);
 
     svgContainer.append("path").attr("class", "chart-line");
 
@@ -40,6 +52,23 @@ export default function ExceedancePlot({
       .attr("class", "chart-grid-x")
       .attr("transform", `translate(0, ${height})`);
     svgContainer.append("g").attr("class", "chart-grid-y");
+
+    svgContainer
+      .append("g")
+      .attr("class", "chart-x-label")
+      .attr("transform", `translate(${width / 2}, ${height + 30})`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .style("dominant-baseline", "hanging")
+      .style("font-size", 18);
+
+    svgContainer
+      .append("g")
+      .attr("class", "chart-y-label")
+      .attr("transform", `translate(${-40}, ${height / 2}) rotate(-90)`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .style("font-size", 18);
   }, []);
 
   useLayoutEffect(
@@ -54,9 +83,13 @@ export default function ExceedancePlot({
 
       const y = d3.scaleLinear().domain([0, maxValue]).range([height, 0]);
 
-      svgElement.current
-        .select(".chart-axis-x")
-        .call(d3.axisBottom(x).ticks(5).tickSizeInner(-height));
+      svgElement.current.select(".chart-axis-x").call(
+        d3
+          .axisBottom(x)
+          .ticks(5)
+          .tickSizeInner(-height)
+          .tickFormat((d) => (d == 0 ? "" : `${d}%`))
+      );
 
       // svgElement.current
       //   .select(".chart-grid-x")
@@ -69,6 +102,9 @@ export default function ExceedancePlot({
       //   .select(".chart-grid-y")
       //   .call(d3.axisLeft(y).ticks(5).tickSizeInner(-height));
 
+      svgElement.current.select(".chart-x-label text").text(axisBottom);
+      svgElement.current.select(".chart-y-label text").text(axisLeft);
+      svgElement.current.select(".chart-title text").text(title);
       svgElement.current
         .select(".chart-line")
         .datum(liquidLevels)
@@ -87,7 +123,7 @@ export default function ExceedancePlot({
             })
         );
     },
-    [levelInterp]
+    [levelInterp, title, axisLeft, axisBottom, maxValue]
   );
 
   return (

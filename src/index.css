@@ -165,7 +165,7 @@ h1:first-child {
 }
 
 .tutorial {
-  max-width: 70ch;
+  max-width: 90ch;
   font-size: 0.8em;
   padding-block: 2rem;
 }
@@ -187,4 +187,16 @@ h1:first-child {
   margin: 2em auto;
   margin-bottom: 0;
   padding: 1em;
+}
+
+.img-group {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  align-items: baseline;
+  margin-block: 1em;
+}
+
+.img-group > div {
+  height: min-content;
 }

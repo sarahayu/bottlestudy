@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import randomRange from "./randomRange";
 import inverseRandomRange from "./inverseRandomRange";
 
-const NUM_QS_PER_GROUP = 5;
+const NUM_QS_PER_GROUP = 1;
 
 export default function generateQuestions() {
   const questions = {

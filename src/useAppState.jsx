@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import * as d3 from "d3";
 
 import QuestionSummarize from "components/QuestionSummarize";
@@ -9,19 +9,29 @@ import SurveyTLX from "components/SurveyTLX";
 import ExceedancePlot from "components/ExceedancePlot";
 import BottleGlyph from "components/BottleGlyph";
 
-const questionsData = generateQuestions();
+import { initializeApp } from "firebase/app";
 
-console.log(questionsData);
+const questionsData = generateQuestions();
 
 export default function useAppState() {
   const [isStartStudy, setIsStartStudy] = useState(false);
   const [currentSlideIdx, setCurrentSlideIdx] = useState(0);
   const [canProceed, setCanProceed] = useState(true);
   const [answerCorrect, setAnswerCorrect] = useState(true);
+  const userDataRef = useRef({
+    ttiAnswers: [],
+    surveyAnswers: [],
+  });
 
   const recordTLX = useCallback(function (questions, testType) {
-    console.log(testType, questions);
-    // TODO record tlx answers somewhere
+    userDataRef.current["surveyAnswers"].push({
+      type: testType,
+      answers: questions,
+    });
+  }, []);
+
+  const submitData = useCallback(function () {
+    console.log(userDataRef.current);
   }, []);
 
   const questions = useMemo(function createQuestions() {
@@ -82,5 +92,6 @@ export default function useAppState() {
     answerCorrect,
     isStartStudy,
     closeTutorial,
+    submitData,
   };
 }

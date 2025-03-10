@@ -111,13 +111,15 @@ export default function BottleGlyph({
   levelInterp,
   maxValue = 100,
   colorInterp = interpolateWatercolorBlue,
+  title,
+  axisLeft,
   width = 200,
   height = 400,
   resolution = LEVELS,
 }) {
   const LINE_WIDTH = 3;
   const GLYPH_MARGIN = {
-    top: LINE_WIDTH / 2 + height / 6,
+    top: LINE_WIDTH / 2 + height / 6 + 40,
     right: LINE_WIDTH / 2,
     bottom: LINE_WIDTH / 2,
     left: LINE_WIDTH / 2,
@@ -132,6 +134,24 @@ export default function BottleGlyph({
       .append("g")
       .attr("class", "bucket")
       .attr("transform", `translate(${GLYPH_MARGIN.left},${GLYPH_MARGIN.top})`);
+
+    svgContainer
+      .append("g")
+      .attr("class", "chart-title")
+      .attr("transform", `translate(${width / 2}, ${-50})`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .style("font-weight", "bold")
+      .style("font-size", 22);
+
+    svgContainer
+      .append("g")
+      .attr("class", "chart-y-label")
+      .attr("transform", `translate(${20}, ${height / 2}) rotate(-90)`)
+      .append("text")
+      .style("text-anchor", "middle")
+      .style("dominant-baseline", "hanging")
+      .style("font-size", 18);
 
     svgContainer.call(bucketShape(width, height, drawBottle));
 
@@ -162,6 +182,8 @@ export default function BottleGlyph({
 
       const glyph = bucketGlyph(width, height * (maxHeight - minHeight));
 
+      svgElement.current.select(".chart-y-label text").text(axisLeft);
+      svgElement.current.select(".chart-title text").text(title);
       const x = d3
         .scaleLinear()
         .domain([0, maxValue])
@@ -174,7 +196,9 @@ export default function BottleGlyph({
         .select(".bottle-axis")
         .call(
           d3.axisRight(x).ticks(4).tickSize(12).tickFormat(d3.format(".2s"))
-        );
+        )
+        .selectAll("text")
+        .style("font-size", 14);
 
       const liquids = svgElement.current
         .select(".masked-area")

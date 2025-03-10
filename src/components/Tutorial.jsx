@@ -1,17 +1,40 @@
 import React from "react";
+import waterLevels from "data/water_levels";
+import BarGraph from "./BarGraph";
+import ExceedancePlot from "./ExceedancePlot";
+import createInterpsFromDelivs from "utils/createInterpsFromDelivs";
+import BottleGlyph from "./BottleGlyph";
+import BottleGlyphLegend from "./BottleGlyphLegend";
 
 export default function Tutorial({ closeTutorial }) {
   return (
     <div className="tutorial study-area">
       <h1>User Study Tutorial</h1>
       <p>You are likely familiar with bar graphs.</p>
-      <img src="https://placecats.com/640/360" alt="" srcset="" />
+      <div className="img-group">
+        <BarGraph
+          data={waterLevels.A}
+          title={"Reservoir A"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          axisBottom={"Year"}
+          maxValue={400}
+          width={350}
+        />
+        <BarGraph
+          data={waterLevels.B}
+          title={"Reservoir B"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          axisBottom={"Year"}
+          maxValue={400}
+          width={350}
+        />
+      </div>
       <p>
-        These track water levels in two reservoirs, A and B, over several years.
-        If you want to choose a reservoir with the best supply best on its
+        These track water supply in two reservoirs, A and B, over several years.
+        If you want to choose a reservoir with the best supply based on its
         minimum or maximum, you will likely be able to do so. But what if you
         want to choose based on its median? Or based on how likely it is o get
-        at least 60 TAF?
+        at least 200 TAF?
       </p>
       <p>
         To more easily find that information, you can use two types of graphs
@@ -19,10 +42,52 @@ export default function Tutorial({ closeTutorial }) {
         these types of graphs, let us first reorder the bars from the previous
         bar graphs from highest to lowest.
       </p>
-      <img src="https://placecats.com/640/360" alt="" />
+      <div className="img-group">
+        <BarGraph
+          data={waterLevels.A.toSorted((a, b) => b - a)}
+          title={"Reservoir A"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          maxValue={400}
+          width={350}
+        />
+        <BarGraph
+          data={waterLevels.B.toSorted((a, b) => b - a)}
+          title={"Reservoir B"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          maxValue={400}
+          width={350}
+        />
+      </div>
       <h2>Exceedance Plots</h2>
       <p>When we simplify the bars to a line, we get an exceedance plot.</p>
-      <img src="https://placecats.com/640/360" alt="" />
+      <div className="img-group">
+        <ExceedancePlot
+          levelInterp={createInterpsFromDelivs(
+            waterLevels.A.toSorted((a, b) => b - a),
+            0,
+            400
+          )}
+          title={"Reservoir A"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          axisBottom={"% Chance of Exceeding"}
+          width={200}
+          height={200}
+          maxValue={400}
+        />
+        <ExceedancePlot
+          levelInterp={createInterpsFromDelivs(
+            waterLevels.B.toSorted((a, b) => b - a),
+            0,
+            400
+          )}
+          title={"Reservoir B"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          axisBottom={"% Chance of Exceeding"}
+          width={200}
+          height={200}
+          maxValue={400}
+        />
+      </div>
       <p>
         You can find minimum, maximum, and other characteristics of the datasets
         as shown above by the graph annotations.
@@ -33,7 +98,37 @@ export default function Tutorial({ closeTutorial }) {
         get a bottle glyph. We will simplify by only using the minimum, 25th
         percentile, median, 75th percentile, and maximum values.
       </p>
-      <img src="https://placecats.com/640/360" alt="" />
+      <div className="img-group">
+        <BottleGlyph
+          levelInterp={createInterpsFromDelivs(
+            waterLevels.A.toSorted((a, b) => b - a),
+            0,
+            400
+          )}
+          title={"Reservoir A"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          width={200}
+          height={200}
+          maxValue={400}
+        />
+        <BottleGlyph
+          levelInterp={createInterpsFromDelivs(
+            waterLevels.B.toSorted((a, b) => b - a),
+            0,
+            400
+          )}
+          title={"Reservoir B"}
+          axisLeft={"Thousand-Acre Feet (TAF)"}
+          width={200}
+          height={200}
+          maxValue={400}
+        />
+        <BottleGlyphLegend
+          label={"% Chance of Exceeding"}
+          width={250}
+          height={200}
+        />
+      </div>
       <p>
         You can find minimum, maximum, and other characteristics of the datasets
         as shown above.
@@ -43,9 +138,9 @@ export default function Tutorial({ closeTutorial }) {
         Feel free to reread this tutorial to familiarize yourself with
         exceedance plots and bottle glyphs. Once you feel you are ready, click
         the "Continue" button below to proceed to the questions portion of this
-        user study. For each step, you will be asked asked a question; it will
-        only let you proceed to the next question when you get the answer(s)
-        correct. Please think thoroughly but promptly!
+        user study. For each step, you will be asked a question; it will only
+        let you proceed to the next question when you get the answer(s) correct.
+        Please think thoroughly but promptly!
       </p>
       <button onClick={closeTutorial}>Continue</button>
     </div>
