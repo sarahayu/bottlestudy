@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import randomRange from "./randomRange";
 import inverseRandomRange from "./inverseRandomRange";
 
-const NUM_QS_PER_GROUP = 1;
+const NUM_QS_PER_GROUP = 5;
 
 export default function generateQuestions() {
   const questions = {
@@ -15,6 +15,8 @@ export default function generateQuestions() {
   epExplore(questions);
   wbSearch(questions);
   wbExplore(questions);
+
+  //console.log(questions);
 
   return questions;
 }
@@ -206,7 +208,7 @@ function generateExploreQuestion() {
         : RANGE_MAX;
     const exclusiveMinimum = randomRange(RANGE_MIN, upperBoundOfMinimum - 1);
 
-    console.log(exclusiveMinimum);
+    //console.log(exclusiveMinimum);
 
     concatConditions(appliedConds, {
       medianCond: (possibleMedianExact) =>
@@ -221,7 +223,7 @@ function generateExploreQuestion() {
     if (knownMinimum === null) knownMinimum = exclusiveMinimum + 1;
   }
   // possibly add an incorrect answer
-  else if (randomRange(2) == 0) {
+  else if (randomRange(0, 2) == 0) {
     const lowerBoundOfData = knownMinimum !== null ? knownMinimum : RANGE_MIN;
     const falseExclusiveMinimum = randomRange(
       lowerBoundOfData + 1,
@@ -249,7 +251,7 @@ function generateExploreQuestion() {
       RANGE_MAX + 1
     );
 
-    console.log(exclusiveMaximum);
+    //console.log(exclusiveMaximum);
 
     concatConditions(appliedConds, {
       medianCond: (possibleMedianExact) =>
@@ -262,7 +264,7 @@ function generateExploreQuestion() {
     possibleAns.push(`All scenarios get less than ${exclusiveMaximum} TAF`);
   }
   // possibly add an incorrect answer
-  else if (randomRange(2) == 0) {
+  else if (randomRange(0, 2) == 0) {
     const upperBoundOfData = RANGE_MAX;
     const falseExclusiveMax = randomRange(RANGE_MIN, upperBoundOfData);
 

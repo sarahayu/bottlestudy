@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import BottleGlyph from "./BottleGlyph";
 import createInterpsFromDelivs from "utils/createInterpsFromDelivs";
+import BottleGlyphLegend from "./BottleGlyphLegend";
 
 export default function QuestionSummarize({
   id,
@@ -8,8 +9,8 @@ export default function QuestionSummarize({
   data,
   possibleAns,
   correctAns,
-  setResponseTime,
   setAnswerCorrect,
+  recordTTI,
   VisComponent,
 }) {
   const [selected, setSelected] = useState([]);
@@ -20,6 +21,11 @@ export default function QuestionSummarize({
       setAnswerCorrect(false);
       setSelected([]);
       startTimeRef.current = Date.now();
+
+      return function exitQuestion() {
+        //console.log("end summ ", Date.now() - startTimeRef.current);
+        recordTTI(Date.now() - startTimeRef.current);
+      };
     },
     [id]
   );
@@ -34,7 +40,6 @@ export default function QuestionSummarize({
           a1.every((a) => a2.includes(a)) && a2.every((a) => a1.includes(a));
 
         if (eqArr(s, correctAns)) {
-          setResponseTime(Date.now() - startTimeRef.current);
           setAnswerCorrect(true);
         } else {
           setAnswerCorrect(false);
@@ -51,7 +56,7 @@ export default function QuestionSummarize({
 
       <div className="data-to-summarize">
         {data.map((pa, i) => (
-          <div>
+          <div key={i}>
             <VisComponent
               key={i}
               levelInterp={createInterpsFromDelivs(pa, 0, 20)}
@@ -61,11 +66,22 @@ export default function QuestionSummarize({
             />
           </div>
         ))}
+
+        {VisComponent === BottleGlyph && (
+          <div className="legend">
+            <h3>Legend</h3>
+            <BottleGlyphLegend
+              label={"% Chance of Exceeding"}
+              width={250}
+              height={200}
+            />
+          </div>
+        )}
       </div>
 
       <div className="possible-ans">
         {possibleAns.map((pa, i) => (
-          <span key={i} className={correctAns.includes(i) ? "correctans" : ""}>
+          <span key={i}>
             <input
               type="checkbox"
               checked={selected.includes(i)}

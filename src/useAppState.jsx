@@ -10,6 +10,8 @@ import ExceedancePlot from "components/ExceedancePlot";
 import BottleGlyph from "components/BottleGlyph";
 
 import { initializeApp } from "firebase/app";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import SurveyVEQ from "components/SurveyVEQ";
 
 const questionsData = generateQuestions();
 
@@ -19,27 +21,74 @@ export default function useAppState() {
   const [canProceed, setCanProceed] = useState(true);
   const [answerCorrect, setAnswerCorrect] = useState(true);
   const userDataRef = useRef({
-    ttiAnswers: [],
-    surveyAnswers: [],
+    answers: [],
+    tlx_answers: [],
+    veq_answers: [],
   });
 
-  const recordTLX = useCallback(function (questions, testType) {
-    userDataRef.current["surveyAnswers"].push({
-      type: testType,
+  const recordQuestion = useCallback(function (tti, question, type) {
+    const unarrayData = {};
+
+    if (question["data"]) {
+      let i = 0;
+      for (const data of question["data"]) {
+        unarrayData[`q${i++}`] = data;
+      }
+    }
+
+    userDataRef.current["answers"].push({
+      ...question,
+      data: Object.assign({}, question["data"]),
+      possibleAns: Object.assign({}, question["possibleAns"]),
+      tti,
+      type,
+    });
+  }, []);
+
+  const recordTLX = useCallback(function (questions, type) {
+    userDataRef.current["tlx_answers"].push({
+      type,
       answers: questions,
     });
   }, []);
 
-  const submitData = useCallback(function () {
-    console.log(userDataRef.current);
+  const recordVEQ = useCallback(function (questions) {
+    userDataRef.current["veq_answers"].push(...questions);
   }, []);
 
-  const questions = useMemo(function createQuestions() {
-    const _questions = [];
+  const submitData = useCallback(async function () {
+    //console.log(userDataRef.current);
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDjJ6vSy68VWyH5BS8yTpw-1eLeKCK1cHw",
+      authDomain: "userstudy-67eff.firebaseapp.com",
+      projectId: "userstudy-67eff",
+      storageBucket: "userstudy-67eff.firebasestorage.app",
+      messagingSenderId: "218201274282",
+      appId: "1:218201274282:web:495d91623867395f661dd3",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+    const id = new Date().toString().split(" ").join("-");
+
+    await setDoc(doc(db, "results", id), userDataRef.current);
+  }, []);
+
+  const slides = useMemo(function createQuestions() {
+    const _slides = [];
 
     d3.shuffle(questionsData.groups).forEach(({ type, qs }, i) => {
+      const epType = type.includes("ep");
+
+      _slides.push(<h1 className="section-intro">Section {i + 1}</h1>);
+
       if (type.includes("search")) {
-        _questions.push(
+        _slides.push(
           ...qs.map((q, j) => (
             <QuestionSearch
               id={i + j}
@@ -47,13 +96,13 @@ export default function useAppState() {
               possibleAns={q.possibleAns}
               correctAns={q.correctAns}
               setAnswerCorrect={setAnswerCorrect}
-              setResponseTime={() => {}}
-              VisComponent={type.includes("ep") ? ExceedancePlot : BottleGlyph}
+              recordTTI={(tti) => void recordQuestion(tti, q, type)}
+              VisComponent={epType ? ExceedancePlot : BottleGlyph}
             />
           ))
         );
       } else if (type.includes("explore"))
-        _questions.push(
+        _slides.push(
           ...qs.map((q, j) => (
             <QuestionSummarize
               id={i + j}
@@ -62,21 +111,29 @@ export default function useAppState() {
               possibleAns={q.possibleAns}
               correctAns={q.correctAns}
               setAnswerCorrect={setAnswerCorrect}
-              setResponseTime={() => {}}
-              VisComponent={type.includes("ep") ? ExceedancePlot : BottleGlyph}
+              recordTTI={(tti) => void recordQuestion(tti, q, type)}
+              VisComponent={epType ? ExceedancePlot : BottleGlyph}
             />
           ))
         );
 
-      _questions.push(
+      _slides.push(
         <SurveyTLX
           recordAnswers={(a) => void recordTLX(a, type)}
           setCanProceed={setCanProceed}
+          section={i + 1}
         />
       );
     });
 
-    return _questions;
+    _slides.push(
+      <SurveyVEQ
+        recordAnswers={(a) => void recordVEQ(a)}
+        setCanProceed={setCanProceed}
+      />
+    );
+
+    return _slides;
   }, []);
 
   const closeTutorial = useCallback(function () {
@@ -84,10 +141,10 @@ export default function useAppState() {
   }, []);
 
   return {
-    questions,
+    slides,
     currentSlideIdx,
     setCurrentSlideIdx,
-    maxSlides: questionsData.num_qs + questionsData.groups.length,
+    maxSlides: questionsData.num_qs + questionsData.groups.length + 4 + 1,
     canProceed,
     answerCorrect,
     isStartStudy,

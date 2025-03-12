@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import BottleGlyph from "./BottleGlyph";
 import createInterpsFromDelivs from "utils/createInterpsFromDelivs";
-import ExceedancePlot from "./ExceedancePlot";
+import BottleGlyphLegend from "./BottleGlyphLegend";
 
 export default function QuestionSearch({
   id,
   prompt,
   possibleAns,
   correctAns,
-  setResponseTime,
   setAnswerCorrect,
+  recordTTI,
   VisComponent,
 }) {
   const [selected, setSelected] = useState(-1);
@@ -20,6 +20,11 @@ export default function QuestionSearch({
       setSelected(-1);
       setAnswerCorrect(false);
       startTimeRef.current = Date.now();
+
+      return function exitQuestion() {
+        //console.log("end search ", Date.now() - startTimeRef.current);
+        recordTTI(Date.now() - startTimeRef.current);
+      };
     },
     [id]
   );
@@ -29,7 +34,6 @@ export default function QuestionSearch({
       setSelected(val);
 
       if (correctAns === val) {
-        setResponseTime(Date.now() - startTimeRef.current);
         setAnswerCorrect(true);
       } else {
         setAnswerCorrect(false);
@@ -44,7 +48,7 @@ export default function QuestionSearch({
 
       <div className="possible-ans">
         {possibleAns.map((pa, i) => (
-          <span className={i == correctAns ? "correctans" : ""}>
+          <span key={i}>
             <input
               type="radio"
               name={id}
@@ -62,6 +66,17 @@ export default function QuestionSearch({
             </label>
           </span>
         ))}
+
+        {VisComponent === BottleGlyph && (
+          <div className="legend">
+            <h3>Legend</h3>
+            <BottleGlyphLegend
+              label={"% Chance of Exceeding"}
+              width={250}
+              height={200}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

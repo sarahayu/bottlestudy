@@ -28,12 +28,13 @@ export default function Tutorial({ closeTutorial }) {
           maxValue={400}
           width={350}
         />
+        <span>Fig. 1</span>
       </div>
       <p>
         These track water supply in two reservoirs, A and B, over several years.
         If you want to choose a reservoir with the best supply based on its
         minimum or maximum, you will likely be able to do so. But what if you
-        want to choose based on its median? Or based on how likely it is o get
+        want to choose based on its median? Or based on how likely it is to get
         at least 200 TAF?
       </p>
       <p>
@@ -57,6 +58,7 @@ export default function Tutorial({ closeTutorial }) {
           maxValue={400}
           width={350}
         />
+        <span>Fig. 2</span>
       </div>
       <h2>Exceedance Plots</h2>
       <p>When we simplify the bars to a line, we get an exceedance plot.</p>
@@ -87,10 +89,15 @@ export default function Tutorial({ closeTutorial }) {
           height={200}
           maxValue={400}
         />
+        <span>Fig. 3</span>
+      </div>
+      <div className="img-group">
+        <img src="annot_ep.png" />
+        <span>Fig. 4</span>
       </div>
       <p>
         You can find minimum, maximum, and other characteristics of the datasets
-        as shown above by the graph annotations.
+        as shown by the annotations in Fig. 4.
       </p>
       <h2>Bottle Glyphs</h2>
       <p>
@@ -128,10 +135,15 @@ export default function Tutorial({ closeTutorial }) {
           width={250}
           height={200}
         />
+        <span>Fig. 5</span>
+      </div>
+      <div className="img-group">
+        <img src="annot_bg.png" />
+        <span>Fig. 6</span>
       </div>
       <p>
         You can find minimum, maximum, and other characteristics of the datasets
-        as shown above.
+        as shown by the annotations in Fig. 6.
       </p>
       <h2>Instructions for Study</h2>
       <p>

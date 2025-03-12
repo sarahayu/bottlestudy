@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import * as d3 from "d3";
-import generateTLX from "utils/generateTLX";
+import generateVEQ from "utils/generateVEQ";
 
-export default function SurveyTLX({ recordAnswers, setCanProceed, section }) {
-  const [questions, setQuestions] = useState(generateTLX());
+export default function SurveyVEQ({ recordAnswers, setCanProceed }) {
+  const [questions, setQuestions] = useState(generateVEQ());
 
   useEffect(function mount() {
     setCanProceed(false);
@@ -25,10 +25,10 @@ export default function SurveyTLX({ recordAnswers, setCanProceed, section }) {
 
   return (
     <div className="survey">
-      <h2>Survey</h2>
+      <h2>Closing Survey</h2>
       <p>
-        Please answer the following questions based on your experience on{" "}
-        <u>section {section}</u>.
+        Please answer the following questions based on your experience during{" "}
+        <u>the entire user study</u>.
       </p>
       <ol className="survey-questions">
         {questions.map(({ q, id, range, selected }) => {
@@ -42,9 +42,9 @@ export default function SurveyTLX({ recordAnswers, setCanProceed, section }) {
                       <input
                         type="radio"
                         name={id}
-                        value={i}
-                        checked={selected == i}
-                        onChange={() => handleOptnChanged(id, i)}
+                        value={7 - i}
+                        checked={selected == 7 - i}
+                        onChange={() => handleOptnChanged(id, 7 - i)}
                       />
                     </li>
                   );

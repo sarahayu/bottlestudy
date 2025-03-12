@@ -7,7 +7,7 @@ import FinishSlide from "components/FinishSlide";
 
 export default function App() {
   const {
-    questions,
+    slides,
     currentSlideIdx,
     setCurrentSlideIdx,
     maxSlides,
@@ -32,7 +32,7 @@ export default function App() {
               canProceed={canProceed}
               answerCorrect={answerCorrect}
             >
-              {questions[currentSlideIdx]}
+              {slides[currentSlideIdx]}
             </StudyFrame>
           )}
           {currentSlideIdx >= maxSlides && (

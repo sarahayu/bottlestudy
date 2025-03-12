@@ -37,7 +37,7 @@ export default function BottleGlyphLegend({
       .style("dominant-baseline", "hanging")
       .text(label);
 
-    const squareLen = (height * 0.7) / (resolution + 1);
+    const squareLen = (height * 0.8) / (resolution + 1);
     svgContainer
       .append("g")
       .attr("class", "legend-swatch")

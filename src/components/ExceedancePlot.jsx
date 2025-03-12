@@ -18,7 +18,7 @@ export default function ExceedancePlot({
     top: 30,
     right: 30,
     bottom: 50,
-    left: 50,
+    left: 60,
   };
 
   const svgElement = useRef();
